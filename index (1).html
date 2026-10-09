@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PythonCamp — Learn Python for Free</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/mode-python.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/theme-tomorrow_night_bright.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+<style>
+  :root {
+    --fcc-navy: #0a0a23;
+    --fcc-navy-2: #1b1b32;
+    --fcc-navy-3: #2a2a40;
+    --fcc-gray: #d0d0d5;
+    --fcc-gray-2: #858591;
+    --fcc-green: #2aaf62;
+    --fcc-green-dark: #1f8a4c;
+    --fcc-green-light: #99c9ff;
+    --fcc-yellow: #f1be32;
+    --fcc-blue: #99c9ff;
+    --fcc-bg: #f5f6f7;
+    --fcc-border: #e0e0e0;
+    --fcc-text: #1b1b32;
+    --fcc-text-muted: #6b6b7b;
+    --pass: #2aaf62;
+    --fail: #ff4d4d;
+    --shadow: 0 2px 8px rgba(0,0,0,.12);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: var(--fcc-bg);
+    color: var(--fcc-text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  /* ===== Top Nav ===== */
+  .topnav {
+    background: var(--fcc-navy);
+    color: #fff;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 3px solid var(--fcc-green);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    font-size: 20px;
+    color: #fff;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .brand .logo-mark {
+    width: 30px; height: 30px;
+    background: var(--fcc-green);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 900; font-size: 18px;
+  }
+  .brand .py { color: var(--fcc-green); }
+  .nav-search {
+    flex: 1;
+    max-width: 420px;
+    position: relative;
+  }
+  .nav-search input {
+    width: 100%;
+    height: 36px;
+    border-radius: 6px;
+    border: none;
+    padding: 0 12px 0 38px;
+    background: #fff;
+    color: var(--fcc-text);
+    font-size: 14px;
+    outline: none;
+  }
+  .nav-search .icon { position: absolute; left: 12px; top: 8px; color: var(--fcc-gray-2); }
+  .nav-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+  .nav-btn {
+    background: transparent; border: none; color: #fff; cursor: pointer;
+    font-size: 14px; padding: 6px 10px; border-radius: 6px; display:flex; align-items:center; gap:6px;
+  }
+  .nav-btn:hover { background: var(--fcc-navy-3); }
+  .nav-btn.donate { background: var(--fcc-green); color:#fff; font-weight:700; }
+  .nav-btn.donate:hover { background: var(--fcc-green-dark); }
+  .signin { border: 1px solid #fff; }
+  .signin:hover { background: #fff; color: var(--fcc-navy); }
+  .progress-pill {
+    display:flex; align-items:center; gap:8px;
+    background: var(--fcc-navy-3); border-radius: 999px; padding: 4px 12px 4px 6px;
+    font-size: 12px; color: #fff;
+  }
+  .ring {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: conic-gradient(var(--fcc-green) var(--p,0%), var(--fcc-navy-3) 0);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .ring::after { content:''; width:18px; height:18px; border-radius:50%; background: var(--fcc-navy); }
+  /* ===== Layout ===== */
+  .shell {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+  /* ===== Sidebar ===== */
+  .sidebar {
+    width: 320px;
+    background: #fff;
+    border-right: 1px solid var(--fcc-border);
+    overflow-y: auto;
+    padding: 12px 0;
+    flex-shrink: 0;
+  }
+  .sidebar::-webkit-scrollbar { width: 8px; }
+  .sidebar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+  .sidebar-head {
+    padding: 8px 18px 14px;
+    border-bottom: 1px solid var(--fcc-border);
+    position: sticky; top: 0; background: #fff; z-index: 5;
+  }
+  .sidebar-head h2 { margin: 0; font-size: 15px; font-weight: 800; }
+  .sidebar-head .sub { font-size: 12px; color: var(--fcc-text-muted); margin-top: 2px; }
+  .module { border-bottom: 1px solid #f0f0f0; }
+  .module-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 18px; cursor: pointer; user-select: none;
+    font-weight: 700; font-size: 14px;
+  }
+  .module-head:hover { background: #f7f7f9; }
+  .module-head .chev { margin-left: auto; transition: transform .2s; color: var(--fcc-text-muted); }
+  .module.open .module-head .chev { transform: rotate(90deg); }
+  .module-head .idx {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--fcc-navy); color:#fff; font-size: 11px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .module.done .idx { background: var(--fcc-green); }
+  .lessons { display: none; padding: 0 0 8px; }
+  .module.open .lessons { display: block; }
+  .lesson {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 18px 9px 44px;
+    cursor: pointer; font-size: 13px; color: var(--fcc-text);
+    border-left: 3px solid transparent;
+  }
+  .lesson:hover { background: #f0f7f3; }
+  .lesson.active { background: #e8f6ee; border-left-color: var(--fcc-green); font-weight: 700; }
+  .lesson .dot {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 2px solid var(--fcc-gray-2); flex-shrink: 0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .lesson.done .dot { background: var(--fcc-green); border-color: var(--fcc-green); color:#fff; }
+  .lesson.done .dot::after { content: '✓'; font-size: 10px; }
+  .lesson .pct { margin-left: auto; font-size: 11px; color: var(--fcc-text-muted); }
+
+  /* ===== Main ===== */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+  }
+  .breadcrumb {
+    display:flex; align-items:center; gap:8px;
+    padding: 10px 20px; background: #fff; border-bottom: 1px solid var(--fcc-border);
+    font-size: 13px; color: var(--fcc-text-muted);
+    flex-wrap: wrap;
+  }
+  .breadcrumb b { color: var(--fcc-text); }
+  .breadcrumb .sep { color: var(--fcc-gray-2); }
+  .work {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) minmax(360px, 1.1fr);
+    grid-template-rows: 1fr 220px;
+    gap: 1px;
+    background: var(--fcc-border);
+    min-height: 0;
+    overflow: hidden;
+  }
+  .panel { background:#fff; display:flex; flex-direction:column; min-height:0; }
+  .panel-head {
+    display:flex; align-items:center; gap:8px;
+    padding: 8px 14px; border-bottom:1px solid var(--fcc-border);
+    font-weight: 700; font-size: 13px; background:#fafafa;
+  }
+  .panel-head .ic { color: var(--fcc-green); }
+  /* Instructions */
+  .instructions { padding: 16px 20px; overflow-y: auto; flex:1; }
+  .instructions::-webkit-scrollbar { width: 8px; }
+  .instructions::-webkit-scrollbar-thumb { background:#ccc; border-radius:4px; }
+  .instructions h1 { font-size: 22px; margin: 0 0 6px; }
+  .instructions .meta { display:flex; gap:8px; margin-bottom: 14px; flex-wrap:wrap; }
+  .tag { font-size: 11px; padding: 3px 8px; border-radius: 999px; font-weight:700; }
+  .tag.diff-easy { background:#e8f6ee; color: var(--fcc-green-dark); }
+  .tag.diff-med { background:#fff4e0; color:#b87b00; }
+  .tag.diff-hard { background:#fde8e8; color:#c0392b; }
+  .instructions p { line-height: 1.6; color: #2a2a40; }
+  .instructions ul, .instructions ol { line-height: 1.7; color:#2a2a40; }
+  .instructions code {
+    background:#f3f3f5; padding: 2px 6px; border-radius:4px;
+    font-family: 'Fira Code', Consolas, Menlo, monospace; font-size: 13px; color: #c0392b;
+  }
+  .instructions pre {
+    background: var(--fcc-navy); color: #e8e8f0;
+    padding: 14px 16px; border-radius: 8px; overflow-x:auto;
+    font-family: 'Fira Code', Consolas, Menlo, monospace; font-size: 13px; line-height:1.55;
+  }
+  .instructions pre code { background: transparent; color: inherit; padding: 0; }
+  .instructions blockquote {
+    border-left: 4px solid var(--fcc-green); background:#f0f7f3;
+    margin: 0; padding: 10px 14px; border-radius: 0 6px 6px 0; color:#1f5e3a;
+  }
+  .hint-box {
+    margin-top: 14px; padding: 12px 14px; border-radius:8px;
+    background:#fffbe6; border:1px solid #ffe58f; font-size: 13px;
+  }
+  .hint-box b { color: #946f00; }
+  .hint-btn {
+    margin-top: 12px; background:none; border:1px dashed #d4b106; color:#946f00;
+    padding: 6px 12px; border-radius:6px; cursor:pointer; font-size:13px;
+  }
+  .hint-btn:hover { background:#fff7cc; }
+  .req-list { margin: 12px 0 0; padding: 0; list-style:none; }
+  .req-list li {
+    display:flex; gap:8px; align-items:flex-start; padding: 6px 0; font-size: 14px;
+  }
+  .req-list .chk { width:18px; height:18px; border-radius:4px; border:2px solid var(--fcc-gray-2); flex-shrink:0; margin-top:1px; }
+  .req-list .chk.pass { background: var(--fcc-green); border-color: var(--fcc-green); color:#fff; }
+  .req-list .chk.pass::after { content:'✓'; display:block; text-align:center; font-size:12px; line-height:14px; }
+  .req-list .chk.fail { border-color: var(--fail); }
+
+  /* Editor */
+  .editor-wrap { flex:1; position: relative; min-height:0; }
+  #editor { position:absolute; inset:0; font-size:14px; }
+  .editor-tools {
+    display:flex; align-items:center; gap:8px; padding:8px 12px; border-top:1px solid var(--fcc-border); background:#fafafa;
+  }
+  .btn {
+    border:none; border-radius:6px; padding: 8px 16px; font-weight:700; font-size:14px; cursor:pointer;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .btn-run { background: var(--fcc-green); color:#fff; }
+  .btn-run:hover { background: var(--fcc-green-dark); }
+  .btn-submit { background: var(--fcc-navy); color:#fff; }
+  .btn-submit:hover { background: var(--fcc-navy-2); }
+  .btn-reset { background:#fff; border:1px solid var(--fcc-border); color: var(--fcc-text); }
+  .btn-reset:hover { background:#f3f3f5; }
+  .btn-solution { background:#fff; border:1px solid var(--fcc-border); color: var(--fcc-text-muted); }
+  .btn-solution:hover { background:#f3f3f5; color: var(--fcc-text); }
+  .editor-tools .spacer { flex:1; }
+  .kbd { font-family: monospace; font-size:11px; color: var(--fcc-text-muted); }
+
+  /* Console */
+  .console { flex:1; overflow:auto; background:#1e1e2e; color:#e0e0ea; font-family: 'Fira Code', Consolas, Menlo, monospace; font-size:13px; padding: 12px 14px; }
+  .console .line { white-space: pre-wrap; word-break: break-word; }
+  .console .err { color: #ff6b6b; }
+  .console .ok { color: #6bff9e; }
+  .console .sys { color: #8be9fd; }
+  .console .muted { color: #888; }
+
+  /* footer */
+  footer {
+    background: var(--fcc-navy); color: var(--fcc-gray);
+    padding: 24px 24px; margin-top: auto;
+    text-align:center; font-size: 13px;
+  }
+  footer a { color: var(--fcc-blue); text-decoration:none; }
+  footer .links { display:flex; gap:18px; justify-content:center; flex-wrap:wrap; margin-bottom:10px; }
+  footer .links a:hover { color:#fff; }
+
+  /* Modal */
+  .modal-bg {
+    position: fixed; inset:0; background: rgba(10,10,35,.6);
+    display:flex; align-items:center; justify-content:center; z-index:100;
+    padding: 16px;
+  }
+  .modal {
+    background:#fff; border-radius:12px; max-width: 520px; width:100%;
+    box-shadow: 0 12px 40px rgba(0,0,0,.3); overflow:hidden;
+    animation: pop .25s ease;
+  }
+  @keyframes pop { from { transform: scale(.9); opacity:0 } to { transform:scale(1); opacity:1 } }
+  .modal .top { background: var(--fcc-green); color:#fff; padding: 18px 22px; }
+  .modal .top h3 { margin:0; font-size:20px; }
+  .modal .top p { margin: 4px 0 0; font-size:13px; opacity:.95; }
+  .modal .body { padding: 22px; }
+  .modal .body p { color: #2a2a40; line-height:1.6; }
+  .modal .actions { display:flex; gap:10px; justify-content:flex-end; padding: 0 22px 22px; }
+  .cert {
+    border: 2px dashed var(--fcc-green); border-radius: 10px; padding: 18px; text-align:center;
+    background: #f0f7f3; margin: 14px 0;
+  }
+  .cert .title { font-size: 18px; font-weight: 800; color: var(--fcc-navy); }
+  .cert .name { font-size: 22px; color: var(--fcc-green-dark); margin: 4px 0; }
+
+  /* Toast */
+  .toast-wrap { position: fixed; bottom: 20px; right: 20px; z-index: 200; display:flex; flex-direction:column; gap:8px; }
+  .toast {
+    background: var(--fcc-navy); color:#fff; padding: 12px 18px; border-radius:8px;
+    box-shadow: var(--shadow); font-size:14px; display:flex; align-items:center; gap:10px;
+    animation: slidein .25s ease; max-width: 340px;
+  }
+  .toast.ok { border-left: 5px solid var(--fcc-green); }
+  .toast.err { border-left: 5px solid var(--fail); }
+  .toast.info { border-left: 5px solid var(--fcc-blue); }
+  @keyframes slidein { from { transform: translateX(40px); opacity:0 } to { transform:translateX(0); opacity:1 } }
+
+  /* Mobile */
+  .menu-toggle { display:none; background:none; border:none; color:#fff; cursor:pointer; padding:6px; }
+  .overlay { display:none; }
+
+  @media (max-width: 900px) {
+    .work { grid-template-columns: 1fr; grid-template-rows: auto 360px 200px; }
+    .sidebar { position: fixed; left:0; top:56px; bottom:0; z-index:60; transform: translateX(-100%); transition: transform .25s; box-shadow: var(--shadow); }
+    .sidebar.open { transform: translateX(0); }
+    .menu-toggle { display:inline-flex; }
+    .nav-search { display:none; }
+    .progress-pill .label { display:none; }
+    .overlay { display:block; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:55; opacity:0; pointer-events:none; transition:opacity .25s; }
+    .overlay.show { opacity:1; pointer-events:auto; }
+  }
+  @media (max-width: 600px) {
+    .nav-btn span.txt { display:none; }
+    .brand span.text { display:none; }
+  }
+  /* loading */
+  .loader {
+    position: fixed; inset:0; background: var(--fcc-navy); z-index: 300;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 18px;
+    color:#fff; transition: opacity .4s;
+  }
+  .loader.hide { opacity:0; pointer-events:none; }
+  .loader .ring-big {
+    width: 64px; height: 64px; border-radius:50%;
+    border: 5px solid var(--fcc-navy-3); border-top-color: var(--fcc-green);
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg) } }
+  .loader .msg { font-size: 16px; font-weight: 700; }
+  .loader .sub { font-size: 13px; color: var(--fcc-gray); }
+  .loader .py-tag {
+    margin-top: 6px; font-family: monospace; background: var(--fcc-navy-3);
+    padding: 4px 10px; border-radius: 6px; font-size: 12px; color: var(--fcc-blue);
+  }
+</style>
+</head>
+<body>
+
+<!-- Loader -->
+<div class="loader" id="loader">
+  <div class="ring-big"></div>
+  <div class="msg">Booting PythonCamp</div>
+  <div class="sub" id="loaderSub">Loading Python runtime (Pyodide)…</div>
+  <div class="py-tag">print("Hello, World!")</div>
+</div>
+
+<!-- Top nav -->
+<nav class="topnav">
+  <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+  <a href="#" class="brand" onclick="goHome();return false;">
+    <span class="logo-mark">🐍</span>
+    <span class="text">Python<span class="py">Camp</span></span>
+  </a>
+  <div class="nav-search">
+    <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="searchInput" type="text" placeholder="Search 50+ lessons…" />
+  </div>
+  <div class="nav-right">
+    <div class="progress-pill" title="Your progress">
+      <div class="ring" id="progressRing"></div>
+      <span class="label"><b id="doneCount">0</b>/<span id="totalCount">0</span> done</span>
+    </div>
+    <button class="nav-btn donate" onclick="donate()"><span class="txt">Donate</span></button>
+    <button class="nav-btn signin" onclick="toast('Guest mode — progress is saved locally on this device.','info')"><span class="txt">Sign in</span></button>
+  </div>
+</nav>
+
+<div class="shell">
+  <div class="overlay" id="overlay"></div>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <h2>🐍 Python Curriculum</h2>
+      <div class="sub">12 modules · <span id="lessonTotal">0</span> lessons · 100% free</div>
+    </div>
+    <div id="curriculum"></div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="breadcrumb" id="breadcrumb"></div>
+    <div class="work">
+      <!-- Instructions -->
+      <section class="panel">
+        <div class="panel-head"><span class="ic">📖</span> Instructions</div>
+        <div class="instructions" id="instructions"></div>
+      </section>
+      <!-- Editor -->
+      <section class="panel">
+        <div class="panel-head"><span class="ic">💻</span> Code Editor</div>
+        <div class="editor-wrap"><div id="editor"></div></div>
+        <div class="editor-tools">
+          <button class="btn btn-run" id="runBtn" onclick="runCode()">▶ Run</button>
+          <button class="btn btn-submit" id="submitBtn" onclick="runTests()">✔ Submit</button>
+          <button class="btn btn-reset" onclick="resetCode()">↺ Reset</button>
+          <div class="spacer"></div>
+          <span class="kbd">Ctrl+Enter = Run</span>
+          <button class="btn btn-solution" onclick="showSolution()">💡 Solution</button>
+        </div>
+      </section>
+      <!-- Console -->
+      <section class="panel" style="grid-column: 1 / -1;">
+        <div class="panel-head">
+          <span class="ic">🖥️</span> Console
+          <span style="margin-left:auto; font-weight:400; color:var(--fcc-text-muted); font-size:12px;" id="pyStatus">Python: loading…</span>
+          <button class="btn btn-reset" style="padding:4px 10px; font-size:12px;" onclick="clearConsole()">Clear</button>
+        </div>
+        <div class="console" id="console"><div class="line muted">Python runtime ready. Click <b>Run</b> to execute your code.</div></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="links">
+    <a href="#" onclick="goHome();return false;">Our Curriculum</a>
+    <a href="#" onclick="toast('A free, community-powered Python curriculum.','info');return false;">About</a>
+    <a href="#" onclick="toast('Open source & open learning.','info');return false;">Open Source</a>
+    <a href="#" onclick="toast('Made with ❤️ for learners everywhere.','info');return false;">Forum</a>
+  </div>
+  <div>PythonCamp — a freeCodeCamp-style learning platform. Built with Python (Pyodide) running entirely in your browser.</div>
+  <div style="margin-top:6px; color:var(--fcc-gray-2); font-size:12px;">© 2025 PythonCamp · No data leaves your device.</div>
+</footer>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ============================================================
+   PYTHONCAMP — full Python curriculum + runtime
+   ============================================================ */
+
+/* ---------- Curriculum ----------
+   Each lesson: {id, title, diff, desc (HTML), starter, hint, solution, tests:[{label, code}]}
+   `tests.code` is JS returning a bool. `py` object exposes pyodide globals.
+*/
+const CURRICULUM = [
+  { name: "Getting Started with Python", icon: "🐍", lessons: [
+    { id:"p1", title:"Print Your First Message", diff:"easy",
+      desc:`<h1>Print Your First Message</h1><div class="meta"><span class="tag diff-easy">Beginner</span></div>
+      <p>Welcome to PythonCamp! In Python, you can display text on the screen using the <code>print()</code> function. The text you want to display goes inside quotation marks <code>" "</code> inside the parentheses.</p>
+      <pre><code>print("Hello, World!")</code></pre>
+      <p>The line above tells Python to output the message <code>Hello, World!</code> to the console.</p>
+      <blockquote>Tip: You can use single quotes <code>' '</code> or double quotes <code>" "</code> — both work in Python.</blockquote>
+      <h3>Your Task</h3>
+      <p>Use <code>print()</code> to display the message <code>Hello, Python!</code></p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# Use print() to display the message below
+# (replace this comment with your code)
+`,
+      hint:`Write: print("Hello, Python!") — don't forget the quotes and parentheses.`,
+      solution:`print("Hello, Python!")`,
+      tests:[{label:'Output contains "Hello, Python!"', code:`out.includes("Hello, Python!")`}]
+    },
+    { id:"p2", title:"Multiple print Statements", diff:"easy",
+      desc:`<h1>Multiple print Statements</h1><div class="meta"><span class="tag diff-easy">Beginner</span></div>
+      <p>You can call <code>print()</code> as many times as you like. Each <code>print()</code> puts its message on a new line.</p>
+      <pre><code>print("Line one")
+print("Line two")</code></pre>
+      <h3>Your Task</h3>
+      <p>Print three lines: <code>Row 1</code>, <code>Row 2</code>, and <code>Row 3</code> — each on its own line.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# Print three lines: Row 1, Row 2, Row 3
+
+`,
+      hint:`Use three separate print() calls.`,
+      solution:`print("Row 1")
+print("Row 2")
+print("Row 3")`,
+      tests:[
+        {label:'Output includes "Row 1"', code:`out.includes("Row 1")`},
+        {label:'Output includes "Row 2"', code:`out.includes("Row 2")`},
+        {label:'Output includes "Row 3"', code:`out.includes("Row 3")`},
+      ]
+    },
+    { id:"p3", title:"Comments", diff:"easy",
+      desc:`<h1>Comments</h1><div class="meta"><span class="tag diff-easy">Beginner</span></div>
+      <p>Comments start with <code>#</code>. Python ignores everything after <code>#</code> on that line. Comments help explain your code.</p>
+      <pre><code># This is a comment
+print("This runs")  # so is this</code></pre>
+      <h3>Your Task</h3>
+      <p>Add a comment that says <code>Learning Python</code>, then print <code>Comment added!</code></p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# Write your comment here, then print the message
+
+`,
+      hint:`A comment line begins with #. Then a new line with print().`,
+      solution:`# Learning Python
+print("Comment added!")`,
+      tests:[
+        {label:'A comment contains "Learning Python"', code:`/(^|\\n)\\s*#.*Learning Python/.test(code)`},
+        {label:'Output includes "Comment added!"', code:`out.includes("Comment added!")`},
+      ]
+    },
+  ]},
+
+  { name:"Variables & Data Types", icon:"📦", lessons:[
+    { id:"v1", title:"Create a Variable", diff:"easy",
+      desc:`<h1>Create a Variable</h1><div class="meta"><span class="tag diff-easy">Beginner</span></div>
+      <p>A <b>variable</b> stores a value. You create one by writing a name, an equals sign, and a value:</p>
+      <pre><code>age = 25
+name = "Ana"</code></pre>
+      <p>Python figures out the type automatically. No need to declare types!</p>
+      <h3>Your Task</h3>
+      <p>Create a variable named <code>city</code> and assign it the string <code>"Tokyo"</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# Create the variable city
+
+`,
+      hint:`city = "Tokyo"`,
+      solution:`city = "Tokyo"`,
+      tests:[
+        {label:'Variable city exists', code:`py.globals.has("city")`},
+        {label:'city equals "Tokyo"', code:`py.globals.get("city") === "Tokyo"`},
+      ]
+    },
+    { id:"v2", title:"Numbers: int and float", diff:"easy",
+      desc:`<h1>Numbers: int and float</h1><div class="meta"><span class="tag diff-easy">Beginner</span></div>
+      <p>Python has two main number types:</p>
+      <ul>
+        <li><code>int</code> — whole numbers, like <code>42</code></li>
+        <li><code>float</code> — decimals, like <code>3.14</code></li>
+      </ul>
+      <pre><code>count = 10        # int
+price = 9.99      # float</code></pre>
+      <h3>Your Task</h3>
+      <p>Create an integer variable <code>quantity</code> equal to <code>100</code> and a float variable <code>weight</code> equal to <code>2.5</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# quantity = ... (int)
+# weight = ... (float)
+
+`,
+      hint:`quantity = 100 and weight = 2.5`,
+      solution:`quantity = 100
+weight = 2.5`,
+      tests:[
+        {label:'quantity == 100', code:`py.globals.get("quantity") === 100`},
+        {label:'weight == 2.5', code:`py.globals.get("weight") === 2.5`},
+      ]
+    },
+    { id:"v3", title:"Booleans", diff:"easy",
+      desc:`<h1>Booleans</h1><div class="meta"><span class="tag diff-easy">Beginner</span></div>
+      <p>A boolean can only be <code>True</code> or <code>False</code> (capital letters!).</p>
+      <pre><code>is_ready = True
+has_error = False</code></pre>
+      <h3>Your Task</h3>
+      <p>Create a boolean variable <code>is_active</code> set to <code>True</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# is_active = ...
+
+`,
+      hint:`is_active = True   (capital T)`,
+      solution:`is_active = True`,
+      tests:[
+        {label:'is_active is True', code:`py.globals.get("is_active") === true`},
+      ]
+    },
+    { id:"v4", title:"Type Conversion", diff:"med",
+      desc:`<h1>Type Conversion</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>You can convert between types using <code>int()</code>, <code>float()</code>, <code>str()</code>, and <code>bool()</code>.</p>
+      <pre><code>age_str = "25"
+age = int(age_str)      # "25" -> 25
+score = float("9")      # "9" -> 9.0</code></pre>
+      <h3>Your Task</h3>
+      <p>Given <code>num_str = "42"</code>, convert it to an integer and store it in <code>num</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`num_str = "42"
+# Convert num_str to int and store in num
+
+`,
+      hint:`num = int(num_str)`,
+      solution:`num_str = "42"
+num = int(num_str)`,
+      tests:[
+        {label:'num == 42 (an integer, not a string)', code:`py.globals.get("num") === 42`},
+      ]
+    },
+  ]},
+
+  { name:"Working with Strings", icon:"🔤", lessons:[
+    { id:"s1", title:"String Concatenation", diff:"easy",
+      desc:`<h1>String Concatenation</h1><div class="meta"><span class="tag diff-easy">Beginner</span></div>
+      <p>Join strings with the <code>+</code> operator:</p>
+      <pre><code>first = "Hello"
+second = "World"
+message = first + " " + second  # "Hello World"</code></pre>
+      <h3>Your Task</h3>
+      <p>Create <code>greeting</code> by concatenating <code>first_name</code>, a space, and <code>last_name</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`first_name = "Guido"
+last_name = "van Rossum"
+# greeting = first_name + " " + last_name
+
+`,
+      hint:`greeting = first_name + " " + last_name`,
+      solution:`first_name = "Guido"
+last_name = "van Rossum"
+greeting = first_name + " " + last_name`,
+      tests:[
+        {label:'greeting == "Guido van Rossum"', code:`py.globals.get("greeting") === "Guido van Rossum"`},
+      ]
+    },
+    { id:"s2", title:"String Length & Indexing", diff:"med",
+      desc:`<h1>String Length & Indexing</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Use <code>len()</code> for length. Index with <code>[ ]</code> (starts at 0). Negative indices count from the end.</p>
+      <pre><code>word = "Python"
+len(word)    # 6
+word[0]      # "P"
+word[-1]     # "n"</code></pre>
+      <h3>Your Task</h3>
+      <p>Given <code>word = "Python"</code>, store its length in <code>n</code> and its first character in <code>first_char</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`word = "Python"
+# n = ...
+# first_char = ...
+
+`,
+      hint:`n = len(word)  and  first_char = word[0]`,
+      solution:`word = "Python"
+n = len(word)
+first_char = word[0]`,
+      tests:[
+        {label:'n == 6', code:`py.globals.get("n") === 6`},
+        {label:'first_char == "P"', code:`py.globals.get("first_char") === "P"`},
+      ]
+    },
+    { id:"s3", title:"String Methods", diff:"med",
+      desc:`<h1>String Methods</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Strings have built-in methods like <code>.upper()</code>, <code>.lower()</code>, <code>.strip()</code>, <code>.replace()</code>.</p>
+      <pre><code>"hi".upper()         # "HI"
+"  Hi  ".strip()     # "Hi"
+"a-b".replace("-"," ")  # "a b"</code></pre>
+      <h3>Your Task</h3>
+      <p>Convert <code>text = "hello world"</code> to uppercase and store it in <code>loud</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`text = "hello world"
+# loud = ...uppercase version...
+
+`,
+      hint:`loud = text.upper()`,
+      solution:`text = "hello world"
+loud = text.upper()`,
+      tests:[
+        {label:'loud == "HELLO WORLD"', code:`py.globals.get("loud") === "HELLO WORLD"`},
+      ]
+    },
+    { id:"s4", title:"f-strings", diff:"med",
+      desc:`<h1>f-strings</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>An <b>f-string</b> lets you embed variables directly inside a string by prefixing with <code>f</code> and using <code>{ }</code>:</p>
+      <pre><code>name = "Ana"
+age = 30
+msg = f"My name is {name} and I am {age}."</code></pre>
+      <h3>Your Task</h3>
+      <p>Using <code>item = "coffee"</code> and <code>price = 4.5</code>, build the string <code>"coffee costs 4.5"</code> using an f-string and store it in <code>sentence</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`item = "coffee"
+price = 4.5
+# sentence = f"... 
+
+`,
+      hint:`sentence = f"{item} costs {price}"`,
+      solution:`item = "coffee"
+price = 4.5
+sentence = f"{item} costs {price}"`,
+      tests:[
+        {label:'sentence == "coffee costs 4.5"', code:`String(py.globals.get("sentence")) === "coffee costs 4.5"`},
+      ]
+    },
+  ]},
+
+  { name:"Operators & Math", icon:"➗", lessons:[
+    { id:"o1", title:"Arithmetic Operators", diff:"easy",
+      desc:`<h1>Arithmetic Operators</h1><div class="meta"><span class="tag diff-easy">Beginner</span></div>
+      <p>Python supports <code>+ - * /</code>. Use <code>//</code> for integer division, <code>%</code> for remainder, <code>**</code> for power.</p>
+      <pre><code>7 / 2     # 3.5
+7 // 2    # 3
+7 % 2     # 1
+2 ** 3    # 8</code></pre>
+      <h3>Your Task</h3>
+      <p>Compute the area of a rectangle: <code>width = 5</code>, <code>height = 3</code>. Store the product in <code>area</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`width = 5
+height = 3
+# area = ...
+
+`,
+      hint:`area = width * height`,
+      solution:`width = 5
+height = 3
+area = width * height`,
+      tests:[
+        {label:'area == 15', code:`py.globals.get("area") === 15`},
+      ]
+    },
+    { id:"o2", title:"Comparison Operators", diff:"med",
+      desc:`<h1>Comparison Operators</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Comparisons return a boolean: <code>== != &lt; &gt; &lt;= &gt;=</code></p>
+      <pre><code>5 > 3       # True
+5 == 5.0   # True
+"a" < "b"  # True</code></pre>
+      <h3>Your Task</h3>
+      <p>Given <code>a = 10</code> and <code>b = 20</code>, store the result of <code>a &lt; b</code> in <code>result</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`a = 10
+b = 20
+# result = ...
+
+`,
+      hint:`result = a < b`,
+      solution:`a = 10
+b = 20
+result = a < b`,
+      tests:[
+        {label:'result is True', code:`py.globals.get("result") === true`},
+      ]
+    },
+    { id:"o3", title:"Logical Operators", diff:"med",
+      desc:`<h1>Logical Operators</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Combine booleans with <code>and</code>, <code>or</code>, <code>not</code>.</p>
+      <pre><code>True and False   # False
+True or False    # True
+not True         # False</code></pre>
+      <h3>Your Task</h3>
+      <p>Given <code>has_ticket = True</code> and <code>is_vip = False</code>, store whether the person can enter VIP: <code>has_ticket and is_vip</code> in <code>can_enter</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`has_ticket = True
+is_vip = False
+# can_enter = ...
+
+`,
+      hint:`can_enter = has_ticket and is_vip`,
+      solution:`has_ticket = True
+is_vip = False
+can_enter = has_ticket and is_vip`,
+      tests:[
+        {label:'can_enter is False', code:`py.globals.get("can_enter") === false`},
+      ]
+    },
+  ]},
+
+  { name:"Control Flow", icon:"🔀", lessons:[
+    { id:"c1", title:"if Statements", diff:"med",
+      desc:`<h1>if Statements</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>An <code>if</code> statement runs code only when a condition is <code>True</code>. Indentation (4 spaces) defines the block.</p>
+      <pre><code>age = 18
+if age >= 18:
+    print("Adult")</code></pre>
+      <h3>Your Task</h3>
+      <p>Given <code>temp = 30</code>, write an <code>if</code> that prints <code>"Hot"</code> when <code>temp &gt; 25</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`temp = 30
+# if temp > 25:
+#     print(...)
+
+`,
+      hint:`Indent the print line with 4 spaces.`,
+      solution:`temp = 30
+if temp > 25:
+    print("Hot")`,
+      tests:[
+        {label:'Output includes "Hot"', code:`out.includes("Hot")`},
+      ]
+    },
+    { id:"c2", title:"if-else", diff:"med",
+      desc:`<h1>if-else</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p><code>else</code> runs when the condition is <code>False</code>.</p>
+      <pre><code>n = 7
+if n % 2 == 0:
+    print("Even")
+else:
+    print("Odd")</code></pre>
+      <h3>Your Task</h3>
+      <p>Given <code>n = 7</code>, print <code>"Even"</code> if it's even, otherwise <code>"Odd"</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`n = 7
+# Write your if/else here
+
+`,
+      hint:`Use n % 2 == 0 to test for even.`,
+      solution:`n = 7
+if n % 2 == 0:
+    print("Even")
+else:
+    print("Odd")`,
+      tests:[
+        {label:'Output is exactly "Odd"', code:`out.trim() === "Odd"`},
+      ]
+    },
+    { id:"c3", title:"if-elif-else", diff:"med",
+      desc:`<h1>if-elif-else</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Chain multiple conditions with <code>elif</code>:</p>
+      <pre><code>score = 85
+if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+else:
+    grade = "C"</code></pre>
+      <h3>Your Task</h3>
+      <p>Given <code>score = 85</code>, set <code>grade</code> to <code>"A"</code> if ≥90, <code>"B"</code> if ≥80, else <code>"C"</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`score = 85
+# grade = ...
+
+`,
+      hint:`Use if / elif / else with the thresholds 90 and 80.`,
+      solution:`score = 85
+if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+else:
+    grade = "C"`,
+      tests:[
+        {label:'grade == "B"', code:`py.globals.get("grade") === "B"`},
+      ]
+    },
+    { id:"c4", title:"for Loops", diff:"med",
+      desc:`<h1>for Loops</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Loop over a sequence with <code>for</code> and <code>range()</code>:</p>
+      <pre><code>for i in range(5):
+    print(i)   # 0 1 2 3 4</code></pre>
+      <h3>Your Task</h3>
+      <p>Use a <code>for</code> loop to print the numbers from <code>1</code> to <code>5</code> (inclusive).</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# for i in range(...):
+#     print(i)
+
+`,
+      hint:`range(1, 6) gives 1..5.`,
+      solution:`for i in range(1, 6):
+    print(i)`,
+      tests:[
+        {label:'Output is 1 2 3 4 5 on separate lines', code:`out.trim().split("\\n").join(",") === "1,2,3,4,5"`},
+      ]
+    },
+    { id:"c5", title:"while Loops", diff:"med",
+      desc:`<h1>while Loops</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>A <code>while</code> loop repeats as long as the condition is <code>True</code>.</p>
+      <pre><code>count = 0
+while count < 3:
+    print(count)
+    count += 1</code></pre>
+      <h3>Your Task</h3>
+      <p>Using a <code>while</code> loop, print numbers from <code>3</code> down to <code>1</code> (in that order).</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`n = 3
+# while n > 0:
+#     print(n)
+#     n -= 1
+
+`,
+      hint:`Start n = 3 and decrement.`,
+      solution:`n = 3
+while n > 0:
+    print(n)
+    n -= 1`,
+      tests:[
+        {label:'Output is 3 2 1 each on a line', code:`out.trim().split("\\n").join(",") === "3,2,1"`},
+      ]
+    },
+    { id:"c6", title:"break and continue", diff:"hard",
+      desc:`<h1>break and continue</h1><div class="meta"><span class="tag diff-hard">Advanced</span></div>
+      <p><code>break</code> exits a loop immediately. <code>continue</code> skips to the next iteration.</p>
+      <pre><code>for i in range(10):
+    if i == 5:
+        break       # stop at 5
+    if i % 2 == 0:
+        continue    # skip even numbers
+    print(i)</code></pre>
+      <h3>Your Task</h3>
+      <p>Loop over <code>range(10)</code>. Use <code>continue</code> to skip even numbers, and print only the odd ones: <code>1 3 5 7 9</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# for i in range(10):
+#     if i % 2 == 0:
+#         continue
+#     print(i)
+
+`,
+      hint:`continue skips an iteration; don't forget to print.`,
+      solution:`for i in range(10):
+    if i % 2 == 0:
+        continue
+    print(i)`,
+      tests:[
+        {label:'Output is 1 3 5 7 9 each on a line', code:`out.trim().split("\\n").join(",") === "1,3,5,7,9"`},
+      ]
+    },
+  ]},
+
+  { name:"Functions", icon:"⚙️", lessons:[
+    { id:"f1", title:"Define a Function", diff:"med",
+      desc:`<h1>Define a Function</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Define a function with <code>def</code>. Call it by its name with parentheses.</p>
+      <pre><code>def greet():
+    print("Hi there!")
+
+greet()</code></pre>
+      <h3>Your Task</h3>
+      <p>Define a function <code>say_hello()</code> that prints <code>"Hello!"</code>, then call it.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# def say_hello():
+#     ...
+# say_hello()
+
+`,
+      hint:`Remember to call the function after defining it.`,
+      solution:`def say_hello():
+    print("Hello!")
+
+say_hello()`,
+      tests:[
+        {label:'A function say_hello exists', code:`py.globals.has("say_hello")`},
+        {label:'Output includes "Hello!"', code:`out.includes("Hello!")`},
+      ]
+    },
+    { id:"f2", title:"Function Parameters", diff:"med",
+      desc:`<h1>Function Parameters</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Pass values into a function using parameters:</p>
+      <pre><code>def greet(name):
+    print(f"Hi {name}")
+
+greet("Ana")   # Hi Ana</code></pre>
+      <h3>Your Task</h3>
+      <p>Define <code>greet(name)</code> that prints <code>"Welcome, {name}!"</code> using an f-string. Then call it with <code>"Sam"</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# def greet(name):
+#     ...
+# greet("Sam")
+
+`,
+      hint:`Use an f-string inside the print.`,
+      solution:`def greet(name):
+    print(f"Welcome, {name}!")
+
+greet("Sam")`,
+      tests:[
+        {label:'Output includes "Welcome, Sam!"', code:`out.includes("Welcome, Sam!")`},
+      ]
+    },
+    { id:"f3", title:"Return Values", diff:"med",
+      desc:`<h1>Return Values</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Use <code>return</code> to send a value back from a function:</p>
+      <pre><code>def add(a, b):
+    return a + b
+
+total = add(3, 4)   # 7</code></pre>
+      <h3>Your Task</h3>
+      <p>Define <code>multiply(a, b)</code> that returns <code>a * b</code>. Then set <code>result = multiply(6, 7)</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# def multiply(a, b):
+#     ...
+# result = multiply(6, 7)
+
+`,
+      hint:`return a * b, then capture it.`,
+      solution:`def multiply(a, b):
+    return a * b
+
+result = multiply(6, 7)`,
+      tests:[
+        {label:'result == 42', code:`py.globals.get("result") === 42`},
+        {label:'multiply function exists', code:`py.globals.has("multiply")`},
+      ]
+    },
+    { id:"f4", title:"Default Parameters", diff:"med",
+      desc:`<h1>Default Parameters</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Give a parameter a default value so it's optional:</p>
+      <pre><code>def greet(name="friend"):
+    print(f"Hi {name}")
+
+greet()        # Hi friend
+greet("Ana")   # Hi Ana</code></pre>
+      <h3>Your Task</h3>
+      <p>Define <code>power(base, exp=2)</code> that returns <code>base ** exp</code>. Call <code>power(5)</code> (should return 25) and store in <code>res</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# def power(base, exp=2):
+#     ...
+# res = power(5)
+
+`,
+      hint:`return base ** exp`,
+      solution:`def power(base, exp=2):
+    return base ** exp
+
+res = power(5)`,
+      tests:[
+        {label:'res == 25', code:`py.globals.get("res") === 25`},
+      ]
+    },
+    { id:"f5", title:"Lambda Functions", diff:"hard",
+      desc:`<h1>Lambda Functions</h1><div class="meta"><span class="tag diff-hard">Advanced</span></div>
+      <p>A <code>lambda</code> is a tiny anonymous function in one line:</p>
+      <pre><code>square = lambda x: x * x
+square(5)   # 25</code></pre>
+      <h3>Your Task</h3>
+      <p>Create a lambda named <code>double</code> that takes <code>x</code> and returns <code>x * 2</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# double = lambda x: ...
+
+`,
+      hint:`double = lambda x: x * 2`,
+      solution:`double = lambda x: x * 2`,
+      tests:[
+        {label:'double(10) == 20', code:`py.globals.get("double")(10) === 20`},
+      ]
+    },
+  ]},
+
+  { name:"Lists", icon:"📋", lessons:[
+    { id:"l1", title:"Create a List", diff:"easy",
+      desc:`<h1>Create a List</h1><div class="meta"><span class="tag diff-easy">Beginner</span></div>
+      <p>A <b>list</b> holds an ordered collection of items in square brackets:</p>
+      <pre><code>fruits = ["apple", "banana", "cherry"]</code></pre>
+      <h3>Your Task</h3>
+      <p>Create a list named <code>colors</code> containing <code>"red"</code>, <code>"green"</code>, and <code>"blue"</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# colors = [...]
+
+`,
+      hint:`colors = ["red", "green", "blue"]`,
+      solution:`colors = ["red", "green", "blue"]`,
+      tests:[
+        {label:'colors equals ["red","green","blue"]', code:`JSON.stringify(py.globals.get("colors").toJs()) === '["red","green","blue"]'`},
+      ]
+    },
+    { id:"l2", title:"Access List Items", diff:"med",
+      desc:`<h1>Access List Items</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Access by index (starts at 0). Use negative indices to count from the end.</p>
+      <pre><code>nums = [10, 20, 30]
+nums[0]    # 10
+nums[-1]   # 30</code></pre>
+      <h3>Your Task</h3>
+      <p>Given <code>nums = [10, 20, 30, 40]</code>, store the first item in <code>first</code> and the last item in <code>last</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`nums = [10, 20, 30, 40]
+# first = ...
+# last = ...
+
+`,
+      hint:`nums[0] and nums[-1]`,
+      solution:`nums = [10, 20, 30, 40]
+first = nums[0]
+last = nums[-1]`,
+      tests:[
+        {label:'first == 10', code:`py.globals.get("first") === 10`},
+        {label:'last == 40', code:`py.globals.get("last") === 40`},
+      ]
+    },
+    { id:"l3", title:"List Methods", diff:"med",
+      desc:`<h1>List Methods</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Add with <code>.append()</code>, remove with <code>.remove()</code>, sort with <code>.sort()</code>.</p>
+      <pre><code>nums = [3, 1, 2]
+nums.append(4)   # [3,1,2,4]
+nums.sort()      # [1,2,3,4]</code></pre>
+      <h3>Your Task</h3>
+      <p>Start with <code>nums = [5, 1, 3]</code>. Append <code>9</code>, then sort the list.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`nums = [5, 1, 3]
+# append 9, then sort
+
+`,
+      hint:`nums.append(9) then nums.sort()`,
+      solution:`nums = [5, 1, 3]
+nums.append(9)
+nums.sort()`,
+      tests:[
+        {label:'nums == [1,3,5,9]', code:`JSON.stringify(py.globals.get("nums").toJs()) === "[1,3,5,9]"`},
+      ]
+    },
+    { id:"l4", title:"List Comprehension", diff:"hard",
+      desc:`<h1>List Comprehension</h1><div class="meta"><span class="tag diff-hard">Advanced</span></div>
+      <p>A compact way to build lists:</p>
+      <pre><code>squares = [x*x for x in range(5)]
+# [0, 1, 4, 9, 16]</code></pre>
+      <h3>Your Task</h3>
+      <p>Use a list comprehension to create <code>evens</code> containing even numbers from 0 to 8: <code>[0, 2, 4, 6, 8]</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# evens = [x for x in range(...) if ...]
+
+`,
+      hint:`[x for x in range(10) if x % 2 == 0]`,
+      solution:`evens = [x for x in range(10) if x % 2 == 0]`,
+      tests:[
+        {label:'evens == [0,2,4,6,8]', code:`JSON.stringify(py.globals.get("evens").toJs()) === "[0,2,4,6,8]"`},
+      ]
+    },
+  ]},
+
+  { name:"Dictionaries", icon:"🗝️", lessons:[
+    { id:"d1", title:"Create a Dictionary", diff:"med",
+      desc:`<h1>Create a Dictionary</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>A <b>dict</b> stores key-value pairs in curly braces:</p>
+      <pre><code>person = {"name": "Ana", "age": 30}</code></pre>
+      <h3>Your Task</h3>
+      <p>Create a dict named <code>book</code> with keys <code>"title"</code> = <code>"Python 101"</code> and <code>"pages"</code> = <code>250</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# book = { ... }
+
+`,
+      hint:`book = {"title": "Python 101", "pages": 250}`,
+      solution:`book = {"title": "Python 101", "pages": 250}`,
+      tests:[
+        {label:'book["title"] == "Python 101"', code:`py.globals.get("book").toJs().get("title") === "Python 101"`},
+        {label:'book["pages"] == 250', code:`py.globals.get("book").toJs().get("pages") === 250`},
+      ]
+    },
+    { id:"d2", title:"Access & Update Dict", diff:"med",
+      desc:`<h1>Access & Update Dict</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Access with <code>dict[key]</code>. Add or update by assigning: <code>dict[key] = value</code>.</p>
+      <pre><code>d = {"a": 1}
+d["b"] = 2      # add
+d["a"] = 100    # update</code></pre>
+      <h3>Your Task</h3>
+      <p>Start with <code>user = {"name": "Sam"}</code>. Add key <code>"age"</code> with value <code>25</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`user = {"name": "Sam"}
+# add "age": 25
+
+`,
+      hint:`user["age"] = 25`,
+      solution:`user = {"name": "Sam"}
+user["age"] = 25`,
+      tests:[
+        {label:'user["age"] == 25', code:`py.globals.get("user").toJs().get("age") === 25`},
+      ]
+    },
+    { id:"d3", title:"Iterate a Dict", diff:"hard",
+      desc:`<h1>Iterate a Dict</h1><div class="meta"><span class="tag diff-hard">Advanced</span></div>
+      <p>Loop with <code>.items()</code> to get both key and value:</p>
+      <pre><code>for k, v in d.items():
+    print(k, v)</code></pre>
+      <h3>Your Task</h3>
+      <p>Given <code>prices = {"apple": 1, "banana": 2}</code>, build a list <code>lines</code> where each element is <code>"apple: 1"</code> and <code>"banana: 2"</code> (use an f-string).</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`prices = {"apple": 1, "banana": 2}
+lines = []
+# for k, v in prices.items():
+#     lines.append(f"{k}: {v}")
+
+`,
+      hint:`Use an f-string like f"{k}: {v}".`,
+      solution:`prices = {"apple": 1, "banana": 2}
+lines = []
+for k, v in prices.items():
+    lines.append(f"{k}: {v}")`,
+      tests:[
+        {label:'lines == ["apple: 1","banana: 2"]', code:`JSON.stringify(py.globals.get("lines").toJs()) === '["apple: 1","banana: 2"]'`},
+      ]
+    },
+  ]},
+
+  { name:"Tuples & Sets", icon:"🎲", lessons:[
+    { id:"t1", title:"Tuples", diff:"med",
+      desc:`<h1>Tuples</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>A <b>tuple</b> is like a list but <b>immutable</b> (cannot change). Use parentheses.</p>
+      <pre><code>point = (3, 4)
+point[0]   # 3</code></pre>
+      <h3>Your Task</h3>
+      <p>Create a tuple <code>rgb</code> with values <code>(255, 128, 0)</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# rgb = (..., ..., ...)
+
+`,
+      hint:`rgb = (255, 128, 0)`,
+      solution:`rgb = (255, 128, 0)`,
+      tests:[
+        {label:'rgb == (255,128,0)', code:`JSON.stringify(py.globals.get("rgb").toJs()) === "[255,128,0]"`},
+      ]
+    },
+    { id:"t2", title:"Sets", diff:"med",
+      desc:`<h1>Sets</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>A <b>set</b> is an unordered collection of <b>unique</b> items:</p>
+      <pre><code>s = {1, 2, 2, 3}   # {1, 2, 3}
+s.add(4)</code></pre>
+      <h3>Your Task</h3>
+      <p>Create a set <code>unique</code> from the list <code>[1, 2, 2, 3, 3, 3]</code>. It should contain <code>{1,2,3}</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`nums = [1, 2, 2, 3, 3, 3]
+# unique = set(nums)
+
+`,
+      hint:`unique = set(nums)`,
+      solution:`nums = [1, 2, 2, 3, 3, 3]
+unique = set(nums)`,
+      tests:[
+        {label:'unique contains exactly 1,2,3', code:`{...py.globals.get("unique").toJs()}.size === 3 && [...py.globals.get("unique").toJs()].sort().join(",") === "1,2,3"`},
+      ]
+    },
+  ]},
+
+  { name:"Error Handling", icon:"🛡️", lessons:[
+    { id:"e1", title:"try-except", diff:"med",
+      desc:`<h1>try-except</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Catch errors so your program doesn't crash:</p>
+      <pre><code>try:
+    x = 10 / 0
+except ZeroDivisionError:
+    print("Cannot divide by zero!")</code></pre>
+      <h3>Your Task</h3>
+      <p>Wrap <code>value = int("abc")</code> in a <code>try/except ValueError</code>. In the <code>except</code> block, set <code>value = 0</code> and print <code>"Invalid number"</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# try:
+#     value = int("abc")
+# except ValueError:
+#     value = 0
+#     print("Invalid number")
+
+`,
+      hint:`Catch ValueError specifically.`,
+      solution:`try:
+    value = int("abc")
+except ValueError:
+    value = 0
+    print("Invalid number")`,
+      tests:[
+        {label:'value == 0 after the exception', code:`py.globals.get("value") === 0`},
+        {label:'Output includes "Invalid number"', code:`out.includes("Invalid number")`},
+      ]
+    },
+    { id:"e2", title:"Multiple Exceptions", diff:"hard",
+      desc:`<h1>Multiple Exceptions</h1><div class="meta"><span class="tag diff-hard">Advanced</span></div>
+      <p>Handle different error types with separate <code>except</code> clauses:</p>
+      <pre><code>try:
+    ...
+except ZeroDivisionError:
+    ...
+except ValueError:
+    ...</code></pre>
+      <h3>Your Task</h3>
+      <p>Inside a <code>try</code>, compute <code>result = 10 / 0</code>. Catch <code>ZeroDivisionError</code> and set <code>result = None</code>. Also print <code>"caught"</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# try:
+#     result = 10 / 0
+# except ZeroDivisionError:
+#     result = None
+#     print("caught")
+
+`,
+      hint:`Use except ZeroDivisionError.`,
+      solution:`try:
+    result = 10 / 0
+except ZeroDivisionError:
+    result = None
+    print("caught")`,
+      tests:[
+        {label:'result is None', code:`py.globals.get("result") === null || py.globals.get("result") === undefined`},
+        {label:'Output includes "caught"', code:`out.includes("caught")`},
+      ]
+    },
+  ]},
+
+  { name:"File Handling", icon:"📁", lessons:[
+    { id:"fh1", title:"Write a File", diff:"med",
+      desc:`<h1>Write a File</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Open a file for writing with <code>open(path, "w")</code>. Use <code>.write()</code> then close (or use <code>with</code>).</p>
+      <pre><code>with open("note.txt", "w") as f:
+    f.write("Hello file!")</code></pre>
+      <h3>Your Task</h3>
+      <p>Use a <code>with</code> statement to open <code>"data.txt"</code> in write mode and write the string <code>"Python rocks"</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# with open("data.txt", "w") as f:
+#     f.write(...)
+
+`,
+      hint:`Use mode "w" and call f.write().`,
+      solution:`with open("data.txt", "w") as f:
+    f.write("Python rocks")`,
+      tests:[
+        {label:'data.txt contains "Python rocks"', code:`(py.runPython("open('data.txt').read()") === "Python rocks")`},
+      ]
+    },
+    { id:"fh2", title:"Read a File", diff:"med",
+      desc:`<h1>Read a File</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Read a file with <code>open(path, "r").read()</code>. We already created <code>data.txt</code> for you.</p>
+      <h3>Your Task</h3>
+      <p>Read the contents of <code>"data.txt"</code> into a variable named <code>content</code> and print it.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# content = open("data.txt").read()
+# print(content)
+
+`,
+      hint:`open("data.txt").read() returns the text.`,
+      solution:`content = open("data.txt").read()
+print(content)`,
+      tests:[
+        {label:'Output equals the file contents', code:`out.trim() === "Python rocks"`},
+      ]
+    },
+  ]},
+
+  { name:"Object-Oriented Programming", icon:"🏛️", lessons:[
+    { id:"o1c", title:"Create a Class", diff:"med",
+      desc:`<h1>Create a Class</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Define a class with <code>class</code>. The <code>__init__</code> method is the constructor.</p>
+      <pre><code>class Dog:
+    def __init__(self, name):
+        self.name = name
+
+d = Dog("Rex")
+print(d.name)   # Rex</code></pre>
+      <h3>Your Task</h3>
+      <p>Define a class <code>Cat</code> with an <code>__init__(self, name)</code> that stores <code>self.name = name</code>. Create an instance <code>c = Cat("Mittens")</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# class Cat:
+#     def __init__(self, name):
+#         self.name = name
+# c = Cat("Mittens")
+
+`,
+      hint:`Don't forget 'self'.`,
+      solution:`class Cat:
+    def __init__(self, name):
+        self.name = name
+
+c = Cat("Mittens")`,
+      tests:[
+        {label:'c.name == "Mittens"', code:`py.globals.get("c").name === "Mittens"`},
+      ]
+    },
+    { id:"o2c", title:"Class Methods", diff:"med",
+      desc:`<h1>Class Methods</h1><div class="meta"><span class="tag diff-med">Intermediate</span></div>
+      <p>Methods are functions defined inside a class. They take <code>self</code> as the first parameter.</p>
+      <pre><code>class Dog:
+    def __init__(self, name):
+        self.name = name
+    def bark(self):
+        return f"{self.name} says woof!"</code></pre>
+      <h3>Your Task</h3>
+      <p>Add a method <code>bark(self)</code> to the <code>Dog</code> class that returns <code>"Woof!"</code>. Create <code>d = Dog("Rex")</code> and set <code>msg = d.bark()</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`class Dog:
+    def __init__(self, name):
+        self.name = name
+    # def bark(self):
+    #     return "Woof!"
+
+d = Dog("Rex")
+# msg = d.bark()
+
+`,
+      hint:`Method returns "Woof!".`,
+      solution:`class Dog:
+    def __init__(self, name):
+        self.name = name
+    def bark(self):
+        return "Woof!"
+
+d = Dog("Rex")
+msg = d.bark()`,
+      tests:[
+        {label:'msg == "Woof!"', code:`py.globals.get("msg") === "Woof!"`},
+      ]
+    },
+    { id:"o3c", title:"Inheritance", diff:"hard",
+      desc:`<h1>Inheritance</h1><div class="meta"><span class="tag diff-hard">Advanced</span></div>
+      <p>A class can inherit from another to reuse and extend behavior:</p>
+      <pre><code>class Animal:
+    def speak(self):
+        return "..."
+
+class Cat(Animal):
+    def speak(self):
+        return "Meow"</code></pre>
+      <h3>Your Task</h3>
+      <p>Create <code>class Cat(Animal)</code> that overrides <code>speak</code> to return <code>"Meow"</code>. Then <code>c = Cat()</code> and <code>sound = c.speak()</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`class Animal:
+    def speak(self):
+        return "..."
+
+# class Cat(Animal):
+#     def speak(self):
+#         return "Meow"
+
+# c = Cat()
+# sound = c.speak()
+
+`,
+      hint:`Cat(Animal) inherits from Animal.`,
+      solution:`class Animal:
+    def speak(self):
+        return "..."
+
+class Cat(Animal):
+    def speak(self):
+        return "Meow"
+
+c = Cat()
+sound = c.speak()`,
+      tests:[
+        {label:'sound == "Meow"', code:`py.globals.get("sound") === "Meow"`},
+      ]
+    },
+  ]},
+
+  { name:"Advanced Python", icon:"🚀", lessons:[
+    { id:"a1", title:"map() Function", diff:"hard",
+      desc:`<h1>map() Function</h1><div class="meta"><span class="tag diff-hard">Advanced</span></div>
+      <p><code>map(func, iterable)</code> applies a function to every item:</p>
+      <pre><code>nums = [1, 2, 3]
+doubled = list(map(lambda x: x*2, nums))
+# [2, 4, 6]</code></pre>
+      <h3>Your Task</h3>
+      <p>Use <code>map</code> with a lambda to square each number in <code>nums = [1,2,3,4]</code>. Store the resulting <b>list</b> in <code>squares</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`nums = [1, 2, 3, 4]
+# squares = list(map(...))
+
+`,
+      hint:`map(lambda x: x*x, nums) then wrap with list().`,
+      solution:`nums = [1, 2, 3, 4]
+squares = list(map(lambda x: x*x, nums))`,
+      tests:[
+        {label:'squares == [1,4,9,16]', code:`JSON.stringify(py.globals.get("squares").toJs()) === "[1,4,9,16]"`},
+      ]
+    },
+    { id:"a2", title:"filter() Function", diff:"hard",
+      desc:`<h1>filter() Function</h1><div class="meta"><span class="tag diff-hard">Advanced</span></div>
+      <p><code>filter(func, iterable)</code> keeps items where the function returns <code>True</code>:</p>
+      <pre><code>nums = [1,2,3,4]
+evens = list(filter(lambda x: x%2==0, nums))
+# [2, 4]</code></pre>
+      <h3>Your Task</h3>
+      <p>Use <code>filter</code> to keep only numbers greater than 5 from <code>nums = [3, 7, 2, 9, 6]</code>. Store the result as a list in <code>big</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`nums = [3, 7, 2, 9, 6]
+# big = list(filter(...))
+
+`,
+      hint:`filter(lambda x: x > 5, nums)`,
+      solution:`nums = [3, 7, 2, 9, 6]
+big = list(filter(lambda x: x > 5, nums))`,
+      tests:[
+        {label:'big == [7,9,6]', code:`JSON.stringify(py.globals.get("big").toJs()) === "[7,9,6]"`},
+      ]
+    },
+    { id:"a3", title:"Generators", diff:"hard",
+      desc:`<h1>Generators</h1><div class="meta"><span class="tag diff-hard">Advanced</span></div>
+      <p>A generator uses <code>yield</code> to produce values one at a time, lazily:</p>
+      <pre><code>def count_up(n):
+    i = 0
+    while i < n:
+        yield i
+        i += 1
+
+list(count_up(3))   # [0,1,2]</code></pre>
+      <h3>Your Task</h3>
+      <p>Define a generator <code>evens(n)</code> that yields even numbers from <code>0</code> up to (but not including) <code>n</code>. Then <code>result = list(evens(6))</code> should be <code>[0,2,4]</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# def evens(n):
+#     ...
+# result = list(evens(6))
+
+`,
+      hint:`Use while i < n: yield i; i += 2`,
+      solution:`def evens(n):
+    i = 0
+    while i < n:
+        yield i
+        i += 2
+
+result = list(evens(6))`,
+      tests:[
+        {label:'result == [0,2,4]', code:`JSON.stringify(py.globals.get("result").toJs()) === "[0,2,4]"`},
+      ]
+    },
+    { id:"a4", title:"Final Challenge — Mini App", diff:"hard",
+      desc:`<h1>Final Challenge 🎓</h1><div class="meta"><span class="tag diff-hard">Capstone</span></div>
+      <p>Congratulations for making it this far! For your final challenge, combine everything you've learned.</p>
+      <h3>Task</h3>
+      <p>Define a function <code>analyze(numbers)</code> that takes a list of numbers and returns a dictionary with three keys:</p>
+      <ul>
+        <li><code>"count"</code> — how many numbers</li>
+        <li><code>"sum"</code> — the total sum</li>
+        <li><code>"average"</code> — the average (a float), or <code>0</code> if empty</li>
+      </ul>
+      <pre><code>analyze([1,2,3,4])
+# {"count": 4, "sum": 10, "average": 2.5}</code></pre>
+      <p>Then call <code>result = analyze([10, 20, 30])</code>.</p>
+      <ul class="req-list" id="reqList"></ul>`,
+      starter:`# def analyze(numbers):
+#     ...
+# result = analyze([10, 20, 30])
+
+`,
+      hint:`Use len(), sum(), and handle the empty case for average.`,
+      solution:`def analyze(numbers):
+    if not numbers:
+        return {"count": 0, "sum": 0, "average": 0}
+    return {
+        "count": len(numbers),
+        "sum": sum(numbers),
+        "average": sum(numbers) / len(numbers)
+    }
+
+result = analyze([10, 20, 30])`,
+      tests:[
+        {label:'analyze function exists', code:`py.globals.has("analyze")`},
+        {label:'result["count"] == 3', code:`py.globals.get("result").toJs().get("count") === 3`},
+        {label:'result["sum"] == 60', code:`py.globals.get("result").toJs().get("sum") === 60`},
+        {label:'result["average"] == 20', code:`py.globals.get("result").toJs().get("average") === 20`},
+        {label:'Empty list returns average 0', code:`py.runPython("analyze([])[\\"average\\"]") === 0`},
+      ]
+    },
+  ]},
+];
+
+/* ---------- flatten lessons ---------- */
+const ALL_LESSONS = [];
+CURRICULUM.forEach(m => m.lessons.forEach(l => ALL_LESSONS.push({...l, module: m.name, moduleIcon: m.icon})));
+
+/* ---------- State ---------- */
+let pyodide = null;
+let editor = null;
+let currentId = ALL_LESSONS[0].id;
+let progress = loadProgress();
+let codeStore = loadCodeStore();
+
+/* ---------- Persistence ---------- */
+function loadProgress(){
+  try { return JSON.parse(localStorage.getItem('pc_progress')||'{}'); } catch(e){ return {}; }
+}
+function saveProgress(){ localStorage.setItem('pc_progress', JSON.stringify(progress)); }
+function loadCodeStore(){
+  try { return JSON.parse(localStorage.getItem('pc_code')||'{}'); } catch(e){ return {}; }
+}
+function saveCodeStore(){ localStorage.setItem('pc_code', JSON.stringify(codeStore)); }
+
+/* ---------- Init Pyodide ---------- */
+async function initPyodide(){
+  try{
+    document.getElementById('loaderSub').textContent = 'Loading Python runtime (Pyodide)…';
+    pyodide = await loadPyodide();
+    document.getElementById('pyStatus').textContent = 'Python ' + (pyodide.runPython("import sys; sys.version.split()[0]")) + ' ready';
+    logLine('sys', '🐍 Python ' + pyodide.runPython("import platform; platform.python_version()") + ' ready');
+  }catch(e){
+    document.getElementById('pyStatus').textContent = 'Python failed to load';
+    logLine('err','Failed to load Pyodide: ' + e.message);
+  }finally{
+    document.getElementById('loader').classList.add('hide');
+    setTimeout(()=> document.getElementById('loader').remove(), 500);
+  }
+}
+
+/* ---------- Console ---------- */
+function logLine(cls, text){
+  const c = document.getElementById('console');
+  const div = document.createElement('div');
+  div.className = 'line ' + (cls||'');
+  div.textContent = text;
+  c.appendChild(div);
+  c.scrollTop = c.scrollHeight;
+}
+function clearConsole(){ document.getElementById('console').innerHTML = ''; }
+
+/* ---------- Run code ---------- */
+async function runCode(){
+  if(!pyodide){ toast('Python is still loading…','info'); return; }
+  const code = editor.getValue();
+  codeStore[currentId] = code; saveCodeStore();
+  clearConsole();
+  logLine('sys','▶ Running your code…');
+  // capture stdout
+  pyodide.runPython(`
+import sys, io
+_buf = io.StringIO()
+sys.stdout = _buf
+sys.stderr = _buf
+`);
+  let out = '', error = null;
+  try{
+    await pyodide.runPythonAsync(code);
+    out = pyodide.runPython("_buf.getvalue()");
+  }catch(e){
+    error = e.message;
+  }finally{
+    pyodide.runPython(`sys.stdout = sys.__stdout__; sys.stderr = sys.__stderr__`);
+  }
+  if(out.trim()){ out.split('\n').forEach(l=> l!=='' && logLine('', l)); }
+  if(error){
+    // pretty error
+    const m = error.split('\n').filter(l=>l.trim());
+    m.forEach(l=> logLine('err', l));
+    toast('Your code raised an error.','err');
+  }else{
+    logLine('ok','✓ Ran without errors.');
+  }
+  return { out, error };
+}
+
+/* ---------- Run tests ---------- */
+async function runTests(){
+  if(!pyodide){ toast('Python is still loading…','info'); return; }
+  const { out, error } = await runCode();
+  if(error){ toast('Fix the error before submitting.','err'); return; }
+  const lesson = ALL_LESSONS.find(l=>l.id===currentId);
+  const code = editor.getValue();
+  const py = pyodide;
+  // expose helpers
+  const ctx = { out, code, py };
+  let allPass = true;
+  const reqList = document.getElementById('reqList');
+  reqList.innerHTML = '';
+  lesson.tests.forEach((t, i) => {
+    let pass = false;
+    try{
+      // eslint-disable-next-line no-new-func
+      const fn = new Function('out','code','py', 'return (' + t.code + ')');
+      pass = !!fn(out, code, py);
+    }catch(e){
+      pass = false;
+    }
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="chk ${pass?'pass':'fail'}"></span><span>${t.label}</span>`;
+    reqList.appendChild(li);
+    if(!pass) allPass = false;
+  });
+  if(allPass){
+    if(!progress[currentId]){
+      progress[currentId] = true; saveProgress();
+      toast('🎉 Tests passed! Lesson complete.','ok');
+      maybeCelebrate();
+    }else{
+      toast('✓ Tests passed!','ok');
+    }
+    renderCurriculum();
+    updateProgressPill();
+  }else{
+    toast('Some tests failed. Check the requirements.','err');
+  }
+}
+
+/* ---------- Solution ---------- */
+function showSolution(){
+  const lesson = ALL_LESSONS.find(l=>l.id===currentId);
+  if(confirm('Show the solution? Try to solve it yourself first!')){
+    editor.setValue(lesson.solution, -1);
+    toast('Solution loaded. Click Run to test it.','info');
+  }
+}
+
+/* ---------- Reset ---------- */
+function resetCode(){
+  const lesson = ALL_LESSONS.find(l=>l.id===currentId);
+  if(confirm('Reset your code to the starter template?')){
+    editor.setValue(lesson.starter, -1);
+    delete codeStore[currentId]; saveCodeStore();
+  }
+}
+
+/* ---------- Render curriculum sidebar ---------- */
+function renderCurriculum(filter=''){
+  const wrap = document.getElementById('curriculum');
+  wrap.innerHTML = '';
+  let total = 0, done = 0;
+  CURRICULUM.forEach((m, mi) => {
+    const filtered = m.lessons.filter(l => l.title.toLowerCase().includes(filter.toLowerCase()) || m.name.toLowerCase().includes(filter.toLowerCase()));
+    if(filtered.length === 0) return;
+    const modDone = m.lessons.filter(l=>progress[l.id]).length;
+    const modTotal = m.lessons.length;
+    const modEl = document.createElement('div');
+    modEl.className = 'module' + (filter ? ' open' : '');
+    modEl.innerHTML = `
+      <div class="module-head ${modDone===modTotal?'done':''}">
+        <span class="idx">${mi+1}</span>
+        <span>${m.icon} ${m.name}</span>
+        <span class="pct">${modDone}/${modTotal}</span>
+        <span class="chev">▸</span>
+      </div>
+      <div class="lessons"></div>`;
+    const lessonsEl = modEl.querySelector('.lessons');
+    filtered.forEach(l => {
+      total++;
+      const isDone = !!progress[l.id];
+      if(isDone) done++;
+      const li = document.createElement('div');
+      li.className = 'lesson' + (isDone?' done':'') + (l.id===currentId?' active':'');
+      li.innerHTML = `<span class="dot"></span><span>${l.title}</span>`;
+      li.onclick = ()=> selectLesson(l.id);
+      lessonsEl.appendChild(li);
+    });
+    modEl.querySelector('.module-head').onclick = ()=> modEl.classList.toggle('open');
+    wrap.appendChild(modEl);
+  });
+  document.getElementById('totalCount').textContent = ALL_LESSONS.length;
+  document.getElementById('lessonTotal').textContent = ALL_LESSONS.length;
+  document.getElementById('doneCount').textContent = done;
+  if(filter==='') updateProgressPill(done, ALL_LESSONS.length);
+}
+
+function updateProgressPill(done, total){
+  done = done ?? Object.keys(progress).length;
+  total = total ?? ALL_LESSONS.length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('progressRing').style.setProperty('--p', pct+'%');
+  document.getElementById('doneCount').textContent = done;
+}
+
+/* ---------- Select lesson ---------- */
+function selectLesson(id){
+  currentId = id;
+  const lesson = ALL_LESSONS.find(l=>l.id===id);
+  // render instructions
+  document.getElementById('instructions').innerHTML = lesson.desc;
+  // breadcrumb
+  const m = CURRICULUM.find(mm=>mm.lessons.some(ll=>ll.id===id));
+  document.getElementById('breadcrumb').innerHTML =
+    `<span>${m.icon} ${m.name}</span><span class="sep">/</span><b>${lesson.title}</b>`;
+  // editor
+  if(!editor){
+    editor = ace.edit('editor');
+    editor.session.setMode('ace/mode/python');
+    editor.setTheme('ace/theme/tomorrow_night_bright');
+    editor.setOptions({ fontSize:'14px', tabSize:4, useSoftTabs:true, printMargin:false, showPrintMargin:false });
+    editor.container.style.lineHeight = '1.6';
+  }
+  editor.setValue(codeStore[id] ?? lesson.starter, -1);
+  // active highlight
+  document.querySelectorAll('.lesson').forEach(el => el.classList.remove('active'));
+  // re-render to update active states
+  const filter = document.getElementById('searchInput').value;
+  renderCurriculum(filter);
+  // close mobile sidebar
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+  // scroll instructions to top
+  document.getElementById('instructions').scrollTop = 0;
+}
+
+/* ---------- Celebrate on milestones / completion ---------- */
+function maybeCelebrate(){
+  const done = Object.keys(progress).length;
+  if(done === ALL_LESSONS.length){
+    openCert();
+  }else if([5,15,30].includes(done)){
+    toast(`🏆 ${done} lessons complete! Keep going.`,'ok');
+  }
+}
+
+/* ---------- Certificate modal ---------- */
+function openCert(){
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  bg.innerHTML = `
+    <div class="modal">
+      <div class="top"><h3>🎓 Certificate of Completion</h3><p>You finished the entire Python curriculum!</p></div>
+      <div class="body">
+        <div class="cert">
+          <div class="title">PythonCamp Certified Python Beginner</div>
+          <div class="name">Learner</div>
+          <div style="font-size:13px;color:#666;">Completed all ${ALL_LESSONS.length} lessons across ${CURRICULUM.length} modules</div>
+          <div style="margin-top:8px;font-size:12px;color:#999;">${new Date().toLocaleDateString()}</div>
+        </div>
+        <p>You can now write functions, work with data structures, handle files and errors, and even do object-oriented programming in Python. 🚀</p>
+      </div>
+      <div class="actions">
+        <button class="btn btn-submit" onclick="this.closest('.modal-bg').remove()">Awesome!</button>
+      </div>
+    </div>`;
+  document.body.appendChild(bg);
+  bg.onclick = (e)=>{ if(e.target===bg) bg.remove(); };
+}
+
+/* ---------- Toast ---------- */
+function toast(msg, type='info'){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  wrap.appendChild(t);
+  setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(40px)'; setTimeout(()=>t.remove(),300); }, 3500);
+}
+
+function donate(){ toast('💚 Thank you! PythonCamp is free & open.','ok'); }
+function goHome(){
+  document.getElementById('searchInput').value='';
+  renderCurriculum('');
+  selectLesson(ALL_LESSONS[0].id);
+}
+
+/* ---------- Mobile menu ---------- */
+document.getElementById('menuToggle').onclick = ()=>{
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+};
+document.getElementById('overlay').onclick = ()=>{
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+};
+
+/* ---------- Search ---------- */
+document.getElementById('searchInput').addEventListener('input', e=>{
+  renderCurriculum(e.target.value);
+});
+
+/* ---------- Keyboard shortcut ---------- */
+document.addEventListener('keydown', e=>{
+  if((e.ctrlKey||e.metaKey) && e.key==='Enter'){ e.preventDefault(); runCode(); }
+  if((e.ctrlKey||e.metaKey) && e.key==='Enter' && e.shiftKey){ e.preventDefault(); runTests(); }
+});
+
+/* ---------- Boot ---------- */
+renderCurriculum();
+selectLesson(currentId);
+initPyodide();
+</script>
+</body>
+</html>
